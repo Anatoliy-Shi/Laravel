@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Faker\Factory;
+use Illuminate\Database\Seeder;
 
 class CategoriesSeeder extends Seeder
 {
@@ -16,20 +14,21 @@ class CategoriesSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('categories')->insert($this->getCategories());
+        \DB::table('categories')->insert($this->getData());
     }
 
-    private function getCategories()
-    {
-        $faker = Factory::create();
-        $data = [];
+	private function getData(): array
+	{
+		$faker = Factory::create('ru_RU');
+		$data = [];
 
-        for ($i = 0; $i < 10; $i++) {
-            $data = [
-                'name' => $faker->fileExtension(),
-                'description' => $faker->text('50'),
-            ];
-        }
-        return $data;
-    }
+		for($i=0; $i < 10; $i++) {
+			$data[] = [
+				'title' => $faker->realText($maxNbChars = 10,  $indexSize = 3),
+				'description' => $faker->realText($maxNbChars = 100,  $indexSize = 2)
+			];
+		}
+
+		return $data;
+	}
 }
