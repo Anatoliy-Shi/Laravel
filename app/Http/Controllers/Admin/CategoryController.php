@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\CreateRequest;
+use App\Http\Requests\Category\EditRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,16 +43,11 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
-        $request->validate([
-            'title' => ['required', 'string', 'min:3']
-        ]);
-
 
         $create = Category::create(
-            $request->only(['title', 'description'])
-        );
+            $request->validated());
 
         if($create) {
             return redirect()->route('admin.categories.index')
@@ -93,9 +90,9 @@ class CategoryController extends Controller
 	 * @param Category $category
 	 * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Category $category)
+    public function update(EditRequest $request, Category $category)
     {
-        $update = $category->fill($request->only(['title', 'description']))
+        $update = $category->fill($request->validated())
           ->save();
 
         if($update) {
