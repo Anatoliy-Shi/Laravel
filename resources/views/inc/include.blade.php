@@ -1,2 +1,1 @@
-Hello, {{ $name }}
-{{ $someVariable }}
+Добро пожаловать в админку, {{ Auth::user()->name  }}

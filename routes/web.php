@@ -1,9 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\UsersController as AdminUsersController;
+use App\Http\Controllers\Account\IndexController as AccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +27,22 @@ Route::get('/', function () {
 //news routes
 
 //admin
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
-	Route::view('/', 'admin.index', ['someVariable' => 'someText'])->name('index');
-	Route::resource('/categories', AdminCategoryController::class);
-	Route::resource('/news', AdminNewsController::class);
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('/account', AccountController::class)
+        ->name('account');
+
+    Route::get('/account/logout', function() {
+        Auth::logout();
+        return redirect()->route('login');
+    })->name('account.logout');
+
+    Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], function() {
+        Route::view('/', 'admin.index')->name('index');
+        Route::resource('/categories', AdminCategoryController::class);
+        Route::resource('/news', AdminNewsController::class);
+        Route::resource('/user', AdminUsersController::class);
+
+});
 });
 
 
@@ -37,10 +52,6 @@ Route::get('/news/{id}', [NewsController::class, 'show'])
 	->where('news', '\d+')
 	->name('news.show');
 
-Route::get('/collection', function() {
-	$array = ['Anna', 'Victor', 'Alexey', 'dima', 'ira', 'Vasya', 'olya'];
-	$collection = collect($array);
-	dd($collection->map(function ($item) {
-		return mb_strtoupper($item);
-	})->sortKeys());
-});
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -3,26 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
-use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 class NewsController extends Controller
 {
-	public function index()
-	{
-		$news = News::query()->select(
-			News::$availableFields
-		)->get();
+    public function index()
+    {
+        $news = News::query()->select(
+            News::$availableFields
+        )->get();
 
+        return view('news.index', [
+            'newsList' => $news
+        ]);
+    }
 
-		return view('news.index', [
-			'newsList' => $news
-		]);
-	}
+    public function show($id)
+    {
+        $news = new News;
+        return view('news.show', [
+            'news' => $news->find($id),
+        ]);
 
-	public function show(News $news)
-	{
-		return view('news.show', [
-			'news' => $news
-		]);
-	}
+    }
 }
+
